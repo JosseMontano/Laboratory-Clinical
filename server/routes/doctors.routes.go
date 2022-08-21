@@ -35,6 +35,8 @@ func GetDoctorHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Doctor no found"))
 		return
 	}
+	
+	db.DB.Model(&doctor).Association("User").Find(&doctor.User) 
 	json.NewEncoder(w).Encode(&doctor)
 }
 func PutDoctorHandler(w http.ResponseWriter, r *http.Request) {

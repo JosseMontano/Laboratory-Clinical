@@ -2,7 +2,9 @@ import styled from "styled-components";
 import { ColorBtn, Button, Input, Label } from "../../styles/globals";
 import { signIn } from "../../services/auth";
 import { SyntheticEvent, useState } from "react";
-import stateResponse from '../../utilities/stateResponse'
+import stateResponse from "../../utilities/stateResponse";
+import { useNavigate } from "react-router-dom";
+
 const ContainerButton = styled.div`
   display: flex;
   justify-content: center;
@@ -15,11 +17,12 @@ const Or = styled.p`
 const Form = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
+  const navigate = useNavigate();
   const submit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const res = await signIn(email, password);
-    stateResponse(res)
+    const url = stateResponse(res);
+    navigate(`/${url}`);
   };
 
   return (

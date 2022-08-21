@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func GenerateJWT(email, role string) (string, error) {
+func GenerateJWT(email string) (string, error) {
 	secretkey := "8021947cbba"
 	var mySigningKey = []byte(secretkey)
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -60,7 +60,7 @@ func SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	validToken, err := GenerateJWT(authuser.Email, authuser.Role)
+	validToken, err := GenerateJWT(authuser.Email)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest) //400
 		w.Write([]byte("failed to generate token"))

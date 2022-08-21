@@ -1,9 +1,10 @@
+
 const stateResponse = (res: Response) => {
-    console.log(res);
-    if (res.status === 200) {
-      alert("ok");
-    } else {
-      alert("algo salio mal");
-    }
+    if (res.status != 200) {
+        alert("algo salio mal");
+        return 'login'
+    } 
+    alert("ok");
+    return 'index'
 }
 export default stateResponse

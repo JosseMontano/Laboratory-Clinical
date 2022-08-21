@@ -10,4 +10,5 @@ type Doctor struct {
 	Age            uint8  `gorm:"not null" json:"age"`
 	Sex            string `gorm:"type:varchar(50);not null" json:"sex"`
 	PatientDoctors []PatientDoctor `json:"patient_doctor"`
+	User []User `json:"users"`
 }
