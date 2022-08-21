@@ -1,11 +1,13 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/JosseMontano/clinical-laboratory/db"
 	"github.com/JosseMontano/clinical-laboratory/models"
 	"github.com/JosseMontano/clinical-laboratory/routes"
 	"github.com/gorilla/mux"
-	"net/http"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -16,7 +18,24 @@ func main() {
 	db.DB.AutoMigrate(models.MedicalExam{})
 	db.DB.AutoMigrate(models.ExamePatient{})
 	db.DB.AutoMigrate(models.PatientDoctor{})
+
 	r := mux.NewRouter()
+
+	/* START CORS PART ONE */
+	/*headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := handlers.AllowedHeaders([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"*"})*/
+
+	cors := cors.New(cors.Options{
+        AllowedOrigins: []string{"*"},
+        AllowedMethods: []string{
+            http.MethodPost,
+            http.MethodGet,
+        },
+        AllowedHeaders:   []string{"*"},
+        AllowCredentials: false,
+    })
+
 
 	r.HandleFunc("/", routes.HomeHandler)
 	/* ===== PATIENTNS ===== */
@@ -34,8 +53,16 @@ func main() {
 	r.HandleFunc("/signup", routes.SignUp).Methods("POST")
 	r.HandleFunc("/signin", routes.SignIn).Methods("POST")
 	r.HandleFunc("/profile", routes.SeeProfile).Methods("GET")
-	
-	http.ListenAndServe(":3000", r)
 
+	r.HandleFunc("/logout", routes.Logout).Methods("POST")
+
+
+	/* ======== CORS PART TWO ==== */
+	handler := cors.Handler(r)
+	http.ListenAndServe(":3000", handler)
+
+
+
+	
 
 }

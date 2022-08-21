@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
 	"github.com/JosseMontano/clinical-laboratory/db"
 	"github.com/JosseMontano/clinical-laboratory/models"
+	"github.com/golang-jwt/jwt"
 )
 
 func SearchProfile(Email string) (models.User, bool) {
@@ -24,18 +24,32 @@ func SearchProfile(Email string) (models.User, bool) {
 }
 
 func SeeProfile(w http.ResponseWriter, r *http.Request) {
-	Email := r.URL.Query().Get("email")
-	if len(Email) < 1 {
-		http.Error(w, "you have send the email", http.StatusBadRequest)
+	cookie, err := r.Cookie("jwt")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest) //400
+		w.Write([]byte("Token not found"))
+		w.Header().Set("Content-Type", "application/json")
 		return
 	}
-	profile, flag := SearchProfile(Email)
-	if !flag{
-		http.Error(w, "we can`t find the data", http.StatusBadRequest)
+	secretkey := "8021947cbba"
+	var mySigningKey = []byte(secretkey)
+	token, _ := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error in parsing")
+		}
+		return mySigningKey, nil
+	})
+	//probar the return with token
+	//claims is the data of the user
+	if token.Claims != nil {
+		w.WriteHeader(http.StatusAccepted)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(token.Claims)
 		return
 	}
-	w.Header().Set("context-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(profile)
+	w.WriteHeader(http.StatusBadRequest) //400
+	w.Write([]byte("Not authorized"))
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(err)
 
 }
