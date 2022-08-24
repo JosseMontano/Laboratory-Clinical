@@ -24,16 +24,24 @@ func SearchProfile(Email string) (models.User, bool) {
 }
 
 func SeeProfile(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("jwt")
+	/*cookie, err := r.Cookie("jwt")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest) //400
 		w.Write([]byte("Token not found"))
 		w.Header().Set("Content-Type", "application/json")
 		return
+	}*/
+	if r.Header["Token"] == nil {
+		w.WriteHeader(http.StatusBadGateway)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("Token no found"))
+		return
 	}
+
 	secretkey := "8021947cbba"
 	var mySigningKey = []byte(secretkey)
-	token, _ := jwt.Parse(cookie.Value, func(token *jwt.Token) (interface{}, error) {
+	//aqui era cookie.value en ves de r.Header["Token"][0]
+	token, _ := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("There was an error in parsing")
 		}
@@ -50,6 +58,4 @@ func SeeProfile(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusBadRequest) //400
 	w.Write([]byte("Not authorized"))
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(err)
-
 }
