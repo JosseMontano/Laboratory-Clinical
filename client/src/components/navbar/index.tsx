@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { GetEmail } from "../../services/auth";
 import { ColorBtn } from "../../styles/globals";
 import Check from "./check";
 import ContainerLinks from "./containerLinks";
@@ -7,7 +8,7 @@ const Nav = styled.nav<{ ColorBtn: string }>`
   background: ${(props) => props.ColorBtn};
   height: 80px;
   width: 100%;
-  position: absolute;
+  position: fixed;
   top: 0px;
 `;
 const Logo = styled.label`
@@ -22,19 +23,32 @@ const Logo = styled.label`
     padding-left: 50px;
   }
 `;
-const NavAux = styled.nav`
-  height: 80px;
-`
+
 const Index = () => {
+  const [nameUser, setNameUser] = useState("");
+  const HandlerGetEmail = async () => {
+    const res = await GetEmail();
+    checkSignIn(res.email);
+  };
+  const checkSignIn = (user: string) => {
+    if (user != "") {
+      setNameUser(user);
+      return
+    }
+    setNameUser("Welcome");
+  };
+  useEffect(() => {
+    HandlerGetEmail();
+  }, []);
+
   return (
-   <>
-    <Nav ColorBtn={ColorBtn}>
-      <Check />
-      <Logo>DesignX</Logo>
-      <ContainerLinks />
-    </Nav>
-    <NavAux />
-   </>
+    <>
+      <Nav ColorBtn={ColorBtn}>
+        <Check />
+        <Logo>{nameUser}</Logo>
+        <ContainerLinks />
+      </Nav>
+    </>
   );
 };
 

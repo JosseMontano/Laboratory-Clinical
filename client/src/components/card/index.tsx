@@ -6,7 +6,7 @@ import IconQuiz from "../icons/quiz";
 import Card from "./card";
 
 const ContainerFather = styled.div`
-  height: calc(100vh - 80px);
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,13 +18,13 @@ const Index = () => {
   let data = [
     {
       icon: <IconAddUser />,
-      title: "Registrar Usuario",
-      text: "Agrega nuevos usuarios para que tengan acceso al sistema, se recomienda que solo se agreguen a funcionarios",
+      title: "Registrar funcionario",
+      text: "Registrar datos del personal para luego creares una cuenta de usuario",
     },
     {
       icon: <IconQuiz />,
       title: "Tomar examen",
-      text: "registrar un nuevo examen a un paciente",
+      text: "Registrar un nuevo examen a un paciente",
     },
     {
       icon: <IconReport />,
