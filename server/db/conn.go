@@ -1,14 +1,14 @@
 package db
 
 import (
+	"log"
+	"os"
+
+	"github.com/JosseMontano/clinical-laboratory/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"os"
 )
-
-var DB *gorm.DB
 
 func LoadEnv() {
 	err := godotenv.Load()
@@ -17,7 +17,9 @@ func LoadEnv() {
 	}
 }
 
-func DBConn() {
+var DB *gorm.DB
+
+func Conn() {
 	LoadEnv()
 	host := os.Getenv("host")
 	user := os.Getenv("user")
@@ -25,12 +27,11 @@ func DBConn() {
 	dbname := os.Getenv("dbname")
 	port := os.Getenv("port")
 	var DSN = "host=" + host + " user=" + user + " password=" + password + " dbname=" + dbname + " port=" + port
-
-	var error error
-	DB, error = gorm.Open(postgres.Open(DSN), &gorm.Config{})
-	if error != nil {
-		log.Fatal(error)
-	} else {
-		log.Println("conected")
+	db, err := gorm.Open(postgres.Open(DSN), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
+	DB = db
+	db.AutoMigrate(&models.User{})
 }
