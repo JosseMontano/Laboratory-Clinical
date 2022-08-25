@@ -20,16 +20,19 @@ const Index = () => {
       icon: <IconAddUser />,
       title: "Registrar funcionario",
       text: "Registrar datos del personal para luego creares una cuenta de usuario",
+      navegate:"doctor"
     },
     {
       icon: <IconQuiz />,
       title: "Tomar examen",
       text: "Registrar un nuevo examen a un paciente",
+      navegate:"quiz"
     },
     {
       icon: <IconReport />,
       title: "Reporte de examen",
       text: "Ver reporte del examen tomado",
+      navegate:"report"
     },
   ];
   return (
@@ -40,5 +43,6 @@ const Index = () => {
     </ContainerFather>
   );
 };
+
 
 export default Index;

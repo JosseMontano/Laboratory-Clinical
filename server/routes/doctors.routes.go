@@ -3,17 +3,32 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
-
 	"github.com/JosseMontano/clinical-laboratory/db"
 	"github.com/JosseMontano/clinical-laboratory/models"
 	"github.com/gorilla/mux"
+
 )
 
-func GetDoctorsHandler(w http.ResponseWriter, r *http.Request) {
+func GetDoctorsHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 	var doctors []models.Doctor
 	db.DB.Find(&doctors)
+	w.WriteHeader(http.StatusAccepted)
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(doctors)
+	}
+	/*w.WriteHeader(http.StatusBadGateway)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte("There ir an error in token"))*/
 }
+
+
+func SecureGreeting() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hello from secure endpoint"))
+	}
+}
+
 func PostDoctorsHandler(w http.ResponseWriter, r *http.Request) {
 	var doctors models.Doctor
 	json.NewDecoder(r.Body).Decode(&doctors)
@@ -35,8 +50,8 @@ func GetDoctorHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Doctor no found"))
 		return
 	}
-	
-	db.DB.Model(&doctor).Association("User").Find(&doctor.User) 
+
+	db.DB.Model(&doctor).Association("User").Find(&doctor.User)
 	json.NewEncoder(w).Encode(&doctor)
 }
 func PutDoctorHandler(w http.ResponseWriter, r *http.Request) {

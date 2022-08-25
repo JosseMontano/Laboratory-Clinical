@@ -33,3 +33,4 @@ export const Label = styled.label`
 font-size: 22px;
 margin-top: 10px;
 `;
+//the margin global is 10px

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { GetEmail } from "../../services/auth";
 import { ColorBtn } from "../../styles/globals";
 import Check from "./check";
 import ContainerLinks from "./containerLinks";
+import HandlerGetEmail from "./getEmail";
+
 const Nav = styled.nav<{ ColorBtn: string }>`
   background: ${(props) => props.ColorBtn};
   height: 80px;
@@ -26,19 +27,12 @@ const Logo = styled.label`
 
 const Index = () => {
   const [nameUser, setNameUser] = useState("");
-  const HandlerGetEmail = async () => {
-    const res = await GetEmail();
-    checkSignIn(res.email);
-  };
-  const checkSignIn = (user: string) => {
-    if (user != "") {
-      setNameUser(user);
-      return
-    }
-    setNameUser("Welcome");
+  const CallGetEmail = async () => {
+    const aux = await HandlerGetEmail();
+    setNameUser(aux);
   };
   useEffect(() => {
-    HandlerGetEmail();
+    CallGetEmail();
   }, []);
 
   return (

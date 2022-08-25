@@ -6,6 +6,7 @@ import (
 	"github.com/JosseMontano/clinical-laboratory/db"
 	"github.com/JosseMontano/clinical-laboratory/models"
 	"github.com/JosseMontano/clinical-laboratory/routes"
+	"github.com/JosseMontano/clinical-laboratory/utilities"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 )
@@ -21,21 +22,15 @@ func main() {
 
 	r := mux.NewRouter()
 
-	/* START CORS PART ONE */
-	/*headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	methods := handlers.AllowedHeaders([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"})
-	origins := handlers.AllowedOrigins([]string{"*"})*/
-
 	cors := cors.New(cors.Options{
-        AllowedOrigins: []string{"*"},
-        AllowedMethods: []string{
-            http.MethodPost,
-            http.MethodGet,
-        },
-        AllowedHeaders:   []string{"*"},
-        AllowCredentials: false,
-    })
-
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodPost,
+			http.MethodGet,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: false,
+	})
 
 	r.HandleFunc("/", routes.HomeHandler)
 	/* ===== PATIENTNS ===== */
@@ -44,7 +39,7 @@ func main() {
 	r.HandleFunc("/patients", routes.PostPatientHandler).Methods("POST")
 	r.HandleFunc("/patients/{id}", routes.DeletePatientHandler).Methods("DELETE")
 	/* ===== DOCTORS ===== */
-	r.HandleFunc("/doctors", routes.GetDoctorsHandler).Methods("GET")
+	r.HandleFunc("/doctors", utilities.ValidateTokenMiddleware(routes.SecureGreeting())).Methods("GET")
 	r.HandleFunc("/doctors/{id}", routes.GetDoctorHandler).Methods("GET")
 	r.HandleFunc("/doctors", routes.PostDoctorsHandler).Methods("POST")
 	r.HandleFunc("/doctors/{id}", routes.PutDoctorHandler).Methods("PUT")
@@ -56,13 +51,8 @@ func main() {
 
 	r.HandleFunc("/logout", routes.Logout).Methods("POST")
 
-
 	/* ======== CORS PART TWO ==== */
 	handler := cors.Handler(r)
 	http.ListenAndServe(":3000", handler)
-
-
-
-	
 
 }

@@ -1,6 +1,6 @@
 const stateResponse = (res: Response) => {
   if (res.status != 200) {
-    return "login";
+    return "";
   }
   return "index";
 };

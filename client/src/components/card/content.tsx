@@ -1,4 +1,4 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { CardModel } from "../../models/card";
 const Container = styled.div`
@@ -35,13 +35,17 @@ const Button = styled.div`
 `;
 
 const Content = (v: CardModel) => {
+  const navigate = useNavigate();
+  const handleroute = (route: string) => {
+    navigate(`/${route}`);
+  };
   return (
     <Container>
       <ContainerAux>{v.icon}</ContainerAux>
       <Title>{v.title}</Title>
       <Text>{v.text}</Text>
       <ContainerAux>
-        <Button>Ir</Button>
+        <Button onClick={() => handleroute(v.navegate)}>Ir</Button>
       </ContainerAux>
     </Container>
   );
