@@ -29,7 +29,7 @@ const Index = () => {
   const [nameUser, setNameUser] = useState("");
   const CallGetEmail = async () => {
     const aux = await HandlerGetEmail();
-  //  setNameUser(aux);
+    setNameUser(aux);
   };
   useEffect(() => {
     CallGetEmail();

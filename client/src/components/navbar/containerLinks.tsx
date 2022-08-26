@@ -37,6 +37,9 @@ const ContainerLinks = () => {
     {
       text: "Tercero",
       url: "",
+    },  {
+      text: "Salir",
+      url: "",
     },
   ];
   return (

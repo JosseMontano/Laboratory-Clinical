@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import {Enlace} from '../../models/nav'
+import { LogOut } from "../../services/auth";
 const Container = styled.li`
   display: inline-block;
   line-height: 80px;
@@ -11,7 +13,7 @@ const Container = styled.li`
     line-height: 30px;
   }
 `;
-const A = styled.a`
+const A = styled.span`
   color: white;
   font-size: 17px;
   padding: 7px 13px;
@@ -33,9 +35,16 @@ const A = styled.a`
   }
 `;
 const Links = (v:Enlace) => {
+  const navigate = useNavigate()
+  const handleLogout = async (text:string) => {
+    if(text === "Salir"){
+      await LogOut()
+      navigate("/")
+    }
+  }
   return (
     <Container>
-      <A href={v.url}>{v.text}</A>
+      <A onClick={() => handleLogout(v.text)}>{v.text}</A>
     </Container>
   );
 };
