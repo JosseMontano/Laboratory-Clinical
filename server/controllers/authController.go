@@ -6,6 +6,7 @@ import (
 
 	"github.com/JosseMontano/clinical-laboratory/db"
 	"github.com/JosseMontano/clinical-laboratory/models"
+	"github.com/JosseMontano/clinical-laboratory/utilities"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
@@ -62,11 +63,9 @@ func Login(c *fiber.Ctx) error {
 			"message": "incorrect password",
 		})
 	}
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
-	})
-	token, err := claims.SignedString([]byte("8021947cbba"))
+
+	token, err := utilities.GenerateJwt(strconv.Itoa(int(user.Id)))
+	
 	if err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)
 	}
@@ -86,30 +85,32 @@ func Login(c *fiber.Ctx) error {
 
 }
 
-type Claims struct{
+type Claims struct {
 	jwt.StandardClaims
 }
 
 func User(c *fiber.Ctx) error {
 	cookie := c.Cookies("jwt")
 
-	token, err := jwt.ParseWithClaims(cookie, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("8021947cbba"), nil
-	})
-
-	if err != nil || !token.Valid {
-		c.Status(fiber.StatusUnauthorized)
-		return c.JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
-	}
-
-	claims := token.Claims.(*jwt.StandardClaims)
+	id, _ := utilities.ParseJwt(cookie)
 
 	var user models.User
 
-	db.DB.Where("id = ?", claims.Issuer).First(&user)
+	db.DB.Where("id = ?", id).First(&user)
 
 	return c.JSON(user)
 }
+func Logout(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+		Name:     "jwt",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
 
+	c.Cookie(&cookie)
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
+
+}
